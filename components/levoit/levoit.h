@@ -13,7 +13,7 @@
 namespace esphome {
 namespace levoit {
 
-enum class LevoitDeviceModel : uint8_t { NONE, CORE_200S, CORE_300S, CORE_400S };
+enum class LevoitDeviceModel : uint8_t { NONE, CORE_200S, CORE_300S, CORE_400S, VITAL_100SC };
 enum class LevoitPacketType : uint8_t { SEND_MESSAGE = 0x22, ACK_MESSAGE = 0x12, ERROR = 0x52 };
 enum class LevoitPayloadType : uint32_t {
   STATUS_REQUEST = 0x013140,
@@ -85,7 +85,11 @@ static const PayloadTypeOverrideMap MODEL_SPECIFIC_PAYLOAD_TYPES = {
          {LevoitPayloadType::STATUS_REQUEST, 0x016140}, {LevoitPayloadType::STATUS_RESPONSE, 0x016140},
          {LevoitPayloadType::AUTO_STATUS, 0x016040}
      }},
+    {LevoitDeviceModel::VITAL_100SC,
+     {
+     }},
 };
+
 
 class Levoit : public Component, public uart::UARTDevice {
  public:
