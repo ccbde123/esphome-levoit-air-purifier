@@ -4,6 +4,7 @@
 #include "esphome/core/defines.h"
 #include "esphome/core/helpers.h"
 #include "esphome/components/uart/uart.h"
+#include "esphome/components/sensor/sensor.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include <freertos/semphr.h>
@@ -78,15 +79,12 @@ static const PayloadTypeOverrideMap MODEL_SPECIFIC_PAYLOAD_TYPES = {
     {LevoitDeviceModel::CORE_400S,
      {
          {LevoitPayloadType::STATUS_REQUEST, 0x01b140}, {LevoitPayloadType::STATUS_RESPONSE, 0x01b040},
-         // ... add other model-specific overrides here ...
      }},
-     {LevoitDeviceModel::CORE_200S,
+    {LevoitDeviceModel::CORE_200S,
      {
          {LevoitPayloadType::STATUS_REQUEST, 0x016140}, {LevoitPayloadType::STATUS_RESPONSE, 0x016140},
          {LevoitPayloadType::AUTO_STATUS, 0x016040}
-         // ... add other model-specific overrides here ...
      }},
-    // ... add other device models and their overrides here ...
 };
 
 class Levoit : public Component, public uart::UARTDevice {
@@ -102,6 +100,12 @@ class Levoit : public Component, public uart::UARTDevice {
   void register_state_listener(uint32_t changeMask, const std::function<void(uint32_t currentBits)> &func);
   void set_request_state(uint32_t onMask, uint32_t offMask, bool aquireMutex = true);
   uint32_t get_model_specific_payload_type(LevoitPayloadType type);
+
+  // Sensor setters
+  void set_pm25_sensor(esphome::sensor::Sensor *sensor) { this->pm25_sensor_ = sensor; }
+  void set_air_quality_sensor(esphome::sensor::Sensor *sensor) { this->air_quality_sensor_ = sensor; }
+  void set_filter_percent_sensor(esphome::sensor::Sensor *sensor) { this->filter_percent_sensor_ = sensor; }
+
   uint32_t fanChangeMask =
     static_cast<uint32_t>(LevoitState::FAN_SPEED1) +
     static_cast<uint32_t>(LevoitState::FAN_SPEED2) +
@@ -128,6 +132,12 @@ class Levoit : public Component, public uart::UARTDevice {
   uint8_t sequenceNumber_ = 0;
   std::vector<uint8_t> rx_message_;
   std::vector<LevoitStateListener> state_listeners_;
+
+  // Sensor pointers
+  esphome::sensor::Sensor *pm25_sensor_{nullptr};
+  esphome::sensor::Sensor *air_quality_sensor_{nullptr};
+  esphome::sensor::Sensor *filter_percent_sensor_{nullptr};
+
   void rx_queue_task_();
   void process_rx_queue_task_();
   void process_tx_queue_task_();
@@ -139,7 +149,6 @@ class Levoit : public Component, public uart::UARTDevice {
   void set_bit_(uint32_t &state, bool condition, LevoitState bit);
   bool validate_message_();
   void handle_payload_(LevoitPayloadType type, uint8_t *payload, size_t len);
-  
 };
 
 }  // namespace levoit
