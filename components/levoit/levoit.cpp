@@ -306,6 +306,9 @@ void Levoit::process_rx_queue_task_() {
     if (!this->validate_message_()) {
       this->rx_message_.clear();
     } else {
+      ESP_LOGI(TAG, "Received raw frame (%d bytes): %s", this->rx_message_.size(),
+        format_hex_pretty(this->rx_message_.data(), this->rx_message_.size()).c_str());
+
       this->last_rx_char_timestamp_ = millis();
     }
   }
