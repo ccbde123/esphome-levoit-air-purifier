@@ -15,7 +15,7 @@ CONF_COMMAND_DELAY = "command_delay"
 CONF_COMMAND_TIMEOUT = "command_timeout"
 CONF_STATUS_POLL_SECONDS = "status_poll_seconds"
 
-VALID_MODELS = ["core200s", "core300s", "core400s"]
+VALID_MODELS = ["core200s", "core300s", "core400s", "vital100sc"]
 
 levoit_ns = cg.esphome_ns.namespace("levoit")
 Levoit = levoit_ns.class_("Levoit", cg.Component, uart.UARTDevice)
@@ -40,4 +40,5 @@ async def to_code(config):
     if CONF_COMMAND_TIMEOUT in config:
         cg.add(var.set_command_timeout(config[CONF_COMMAND_TIMEOUT]))
     if CONF_STATUS_POLL_SECONDS in config:
-        cg.add(var.set_command_timeout(config[CONF_STATUS_POLL_SECONDS]))
+        cg.add(var.set_status_poll_seconds(config[CONF_STATUS_POLL_SECONDS]))
+
